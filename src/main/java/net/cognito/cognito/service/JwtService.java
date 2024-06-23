@@ -11,6 +11,7 @@ import net.cognito.cognito.model.enums.Role;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Map;
 import java.util.function.Function;
@@ -18,7 +19,7 @@ import java.util.function.Function;
 @Service
 public class JwtService {
 
-    private static final String PAYLOAD = "payload";
+    private static final String USER = "user";
 
     public String generateToken(User user) {
         UserPayload userPayload = new UserPayload();
@@ -31,22 +32,23 @@ public class JwtService {
                 .builder()
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + (1000L * 60 * 60 * 24 * 30)))
-                .claim(PAYLOAD, userPayload)
+                .claim(USER, userPayload)
                 .signWith(getSigningKey())
                 .compact();
     }
 
     public <T> T extractClaim(String token, Function<Claims, T> resolver) {
         Claims claims = extractAllClaims(token);
+        System.out.println("Claims: " + claims);
         return resolver.apply(claims);
     }
 
     public String extractUserId(String token) {
-        return extractClaim(token, claims -> claims.get(PAYLOAD, Map.class).get("id")).toString();
+        return extractClaim(token, claims -> claims.get(USER, Map.class).get("id")).toString();
     }
 
     public Role extractUserRole(String token) {
-        String role = extractClaim(token, claims -> claims.get(PAYLOAD, Map.class).get("role")).toString();
+        String role = extractClaim(token, claims -> claims.get(USER, Map.class).get("role")).toString();
         return Role.valueOf(role);
     }
 
@@ -76,6 +78,7 @@ public class JwtService {
         byte[] keyBytes = Decoders.BASE64URL.decode(
                 EnvironmentVariables.getEnvVariable("JWT_SECRET_KEY")
         );
+        System.out.println("KeyBytes: " + Arrays.toString(keyBytes));
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
