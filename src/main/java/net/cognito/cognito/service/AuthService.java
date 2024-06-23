@@ -36,6 +36,8 @@ public class AuthService {
     public AuthenticationResponse register(UserDto userDto) {
         User user = UserMapper.mapToUser(userDto);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setIsVerified(false);
+
 
         user = userRepository.save(user);
         String token = jwtService.generateToken(user);

@@ -11,7 +11,7 @@ public class UserDto {
     private String bio;
     private String profilePicture;
     private String[] interests;
-    private String isVerified;
+    private Boolean isVerified;
 
     public String getId() {
         return id;
@@ -77,11 +77,11 @@ public class UserDto {
         this.interests = interests;
     }
 
-    public String getIsVerified() {
+    public Boolean getIsVerified() {
         return isVerified;
     }
 
-    public void setIsVerified(String isVerified) {
+    public void setIsVerified(Boolean isVerified) {
         this.isVerified = isVerified;
     }
 }
